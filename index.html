@@ -6,7 +6,7 @@
     <title>Envio de Dados para Excel</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.2/xlsx.full.min.js"></script>
     <style>
-           * {
+        * {
             padding: 0;
             margin: 0;
             box-sizing: border-box;
@@ -92,7 +92,7 @@
     </div>
 
     <script>
-           var products = [
+       var products = [
             { categoria: "flat", produto: "Riviera Tira Strass Fivela Ouro Light" },
             { categoria: "papete", produto: "Marisa Tira Arredondada" },
             { categoria: "papete", produto: "Sofia Tira Fina Amarração Prata" },
@@ -142,9 +142,9 @@
             { categoria: "papete", produto: "Cristal Multi Tiras com regulador Branco" },
             { categoria: "papete", produto: "Let Tira Canoa Strass Regulador Nude" }
         ];
-
         var productData = {};
 
+        // Preencher a tabela com os produtos
         var tableBody = document.querySelector('#productTable tbody');
         products.forEach(function(product) {
             var row = document.createElement('tr');
@@ -161,48 +161,37 @@
             tableBody.appendChild(row);
         });
 
-        function calculateTotal() {
-            var rows = document.querySelectorAll('#productTable tbody tr');
-            rows.forEach(function(row) {
-                var cells = row.querySelectorAll('td');
-                var total = 0;
-                for (var i = 2; i < cells.length; i++) {
-                    var quantity = parseInt(cells[i].querySelector('input').value) || 0;
-                    total += quantity;
-                }
-                row.dataset.total = total;
-            });
-        }
-
-        var inputs = document.querySelectorAll('.sizeInput');
-        inputs.forEach(function(input) {
-            input.addEventListener('input', function() {
-                calculateTotal();
-            });
-        });
-
+        // Adicionar evento ao botão de exportação
         document.getElementById('exportButton').addEventListener('click', function() {
             var wb = XLSX.utils.book_new();
             var wsData = [];
 
+            // Iterar sobre as linhas da tabela para obter os dados
             var rows = document.querySelectorAll('#productTable tbody tr');
             rows.forEach(function(row) {
                 var cells = row.querySelectorAll('td');
                 var category = cells[0].textContent;
                 var productName = cells[1].textContent;
-                var rowData = { 'Categoria': category, 'Produto': productName };
+                var quantities = [];
                 cells.forEach(function(cell, index) {
-                    if (index > 1) {
-                        var quantity = parseInt(cell.querySelector('input').value) || 0;
-                        rowData[cell.dataset.size] = quantity;
+                    if (index > 1) { // Ignorar as primeiras duas colunas (Categoria e Produto)
+                        quantities.push(parseInt(cell.querySelector('input').value) || 0);
                     }
                 });
+
+                // Adicionar os dados a um objeto para facilitar a exportação
+                var rowData = { 'Categoria': category, 'Produto': productName };
+                for (var i = 0; i < quantities.length; i++) {
+                    rowData['Tamanho ' + (i + 34)] = quantities[i];
+                }
                 wsData.push(rowData);
             });
 
+            // Criar a planilha
             var ws = XLSX.utils.json_to_sheet(wsData);
             XLSX.utils.book_append_sheet(wb, ws, 'Produtos');
 
+            // Adicionar o nome da loja ao arquivo Excel
             var storeName = document.getElementById('storeName').value;
             wb.Props = {
                 Title: 'Produtos',
@@ -211,8 +200,10 @@
                 CreatedDate: new Date()
             };
 
+            // Salvar o arquivo
             XLSX.writeFile(wb, storeName + '_produtos.xlsx');
 
+            // Exibir uma mensagem de sucesso para o usuário
             document.getElementById('message').textContent = 'Planilha Excel gerada com sucesso!';
             setTimeout(function() {
                 document.getElementById('message').textContent = '';
