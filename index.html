@@ -75,6 +75,7 @@
                 <tr>
                     <th>Categoria</th>
                     <th>Produto</th>
+                    <th>Tamanho 33</th>
                     <th>Tamanho 34</th>
                     <th>Tamanho 35</th>
                     <th>Tamanho 36</th>
@@ -148,6 +149,7 @@
             row.innerHTML = `
                 <td>${product.categoria}</td>
                 <td>${product.produto}</td>
+                <td><input type="number" class="sizeInput" data-product="${product.produto}" data-size="33" min="0"></td>
                 <td><input type="number" class="sizeInput" data-product="${product.produto}" data-size="34" min="0"></td>
                 <td><input type="number" class="sizeInput" data-product="${product.produto}" data-size="35" min="0"></td>
                 <td><input type="number" class="sizeInput" data-product="${product.produto}" data-size="36" min="0"></td>
@@ -179,7 +181,7 @@
                 // Adicionar os dados a um objeto para facilitar a exportação
                 var rowData = { 'Categoria': category, 'Produto': productName };
                 for (var i = 0; i < quantities.length; i++) {
-                    rowData['Tamanho ' + (i + 34)] = quantities[i];
+                    rowData['Tamanho ' + (i + 33)] = quantities[i];
                 }
                 wsData.push(rowData);
             });
